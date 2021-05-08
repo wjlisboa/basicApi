@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.basicapi.converter.PessoaConverter;
+import com.basicapi.dto.EnderecoDto;
 import com.basicapi.dto.PessoaDto;
 import com.basicapi.entities.Pessoa;
+import com.basicapi.feignclients.EnderecoFeignClient;
 import com.basicapi.service.PessoaService;
 
 import io.swagger.annotations.ApiOperation;
@@ -32,7 +34,10 @@ public class PessoaResource {
 	
 	@Autowired
 	private PessoaConverter converter;
-	 
+	
+	@Autowired
+	private EnderecoFeignClient enderecoFeign;
+	
 	@ApiOperation(value = "Retorna uma lista de todas pessoas")
 	@ApiResponses(value = {
 			    @ApiResponse(code = 200, message = "Retorna a lista de pessoas"),
@@ -60,18 +65,32 @@ public class PessoaResource {
 	@ApiOperation(value = "Incluir uma Pessoa")
 	@ApiResponses(value = {
 			    @ApiResponse(code = 200, message = "Retorna a pessoa incluída"),
+			    @ApiResponse(code = 400, message = "CEP inválido ou inexistente"),
 			    @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
 			    @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
 			})
 	@PostMapping(produces="application/json", consumes="application/json")
-	public PessoaDto incluir(@RequestBody PessoaDto pessoaDto) {
+	public ResponseEntity<Object> incluir(@RequestBody PessoaDto pessoaDto) {
+		EnderecoDto endereco = null;
+		if (pessoaDto.getCep()!=null) {
+			try {
+				endereco = enderecoFeign.getEndereco(pessoaDto.getCep()).get();
+			} catch (Exception e) {
+				return ResponseEntity.badRequest().build();
+			}
+		}
 		Pessoa pessoa = converter.dtoToEntity(pessoaDto);
-		return converter.entityToDto(service.incluir(pessoa));
+		pessoaDto = converter.entityToDto(service.incluir(pessoa));
+		if (endereco != null) {
+			pessoaDto.setEndereco(endereco);
+		}
+		return ResponseEntity.ok(pessoaDto);
 	}
 	
 	@ApiOperation(value = "Alterar uma Pessoa")
 	@ApiResponses(value = {
 			    @ApiResponse(code = 200, message = "Retorna a pessoa alterada"),
+			    @ApiResponse(code = 400, message = "CEP inválido ou inexistente"),
 			    @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
 			    @ApiResponse(code = 404, message = "Não existe Pessoa com esse ID"),
 			    @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
@@ -82,8 +101,20 @@ public class PessoaResource {
 		if (!pessoaOptional.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
+		EnderecoDto endereco = null;
+		if (pessoaDto.getCep()!=null) {
+			try {
+				endereco = enderecoFeign.getEndereco(pessoaDto.getCep()).get();
+			} catch (Exception e) {
+				return ResponseEntity.badRequest().build();
+			}
+		}
 		Pessoa pessoa = converter.dtoToEntity(pessoaDto);
-		return ResponseEntity.ok(converter.entityToDto(service.alterar(pessoa)));
+		service.alterar(pessoa);
+		if (endereco != null) {
+			pessoaDto.setEndereco(endereco);
+		}
+		return ResponseEntity.ok(pessoaDto);
 	}
 	
 	@ApiOperation(value = "Excluir uma Pessoa")
