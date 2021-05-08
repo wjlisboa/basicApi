@@ -1,6 +1,7 @@
 package com.basicapi.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,8 +25,8 @@ public class PessoaService {
 		return repository.findByNomeContainingIgnoreCase(nome);
 	}
 
-	public Pessoa buscarPorId(Long id ) {
-		return repository.findById(id).get();
+	public Optional<Pessoa> buscarPorId(Long id ) {
+		return repository.findById(id);
 	}
 
 	public Pessoa incluir (Pessoa pessoa) {
@@ -36,8 +37,9 @@ public class PessoaService {
 		return repository.save(pessoa);
 	}
 	
-	public void excluir (Long id) {
+	public String excluir (Long id) {
 		 repository.deleteById(id);
+		 return "Pessoa excluída com sucesso";
 	}
 
 }

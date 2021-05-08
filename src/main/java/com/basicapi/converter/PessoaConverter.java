@@ -9,6 +9,7 @@ import org.springframework.expression.ParseException;
 import org.springframework.stereotype.Component;
 
 import com.basicapi.dto.PessoaDto;
+import com.basicapi.dto.PessoaDtoInput;
 import com.basicapi.entities.Pessoa;
 
 @Component
@@ -32,5 +33,9 @@ public class PessoaConverter {
 	
 	public List<Pessoa> dtoToEntity(List<PessoaDto> listPessoasDto) throws ParseException {
 		return listPessoasDto.stream().map(this::dtoToEntity).collect(Collectors.toList());
+	}
+
+	public Pessoa dtoInputToEntity(PessoaDtoInput pessoaDto) {
+		return modelMapper.map(pessoaDto, Pessoa.class);
 	}
 }

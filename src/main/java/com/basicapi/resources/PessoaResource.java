@@ -1,7 +1,7 @@
 package com.basicapi.resources;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.basicapi.converter.PessoaConverter;
 import com.basicapi.dto.PessoaDto;
+import com.basicapi.dto.PessoaDtoInput;
 import com.basicapi.entities.Pessoa;
 import com.basicapi.service.PessoaService;
 
@@ -64,8 +65,8 @@ public class PessoaResource {
 			    @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
 			})
 	@PostMapping(produces="application/json", consumes="application/json")
-	public PessoaDto incluir(@RequestBody PessoaDto pessoaDto) {
-		Pessoa pessoa = converter.dtoToEntity(pessoaDto);
+	public PessoaDto incluir(@RequestBody PessoaDtoInput pessoaDto) {
+		Pessoa pessoa = converter.dtoInputToEntity(pessoaDto);
 		return converter.entityToDto(service.incluir(pessoa));
 	}
 	
@@ -73,23 +74,33 @@ public class PessoaResource {
 	@ApiResponses(value = {
 			    @ApiResponse(code = 200, message = "Retorna a pessoa alterada"),
 			    @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+			    @ApiResponse(code = 404, message = "Não existe Pessoa com esse ID"),
 			    @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
 			})
 	@PutMapping(produces="application/json", consumes="application/json")
-	public PessoaDto alterar(@RequestBody PessoaDto pessoaDto) {
-		Pessoa pessoa = converter.dtoToEntity(pessoaDto);
-		return converter.entityToDto(service.alterar(pessoa));
+	public ResponseEntity<Object> alterar(@RequestBody PessoaDtoInput pessoaDto) {
+		Optional<Pessoa> pessoaOptional = service.buscarPorId(pessoaDto.getId());
+		if (!pessoaOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
+		}
+		Pessoa pessoa = converter.dtoInputToEntity(pessoaDto);
+		return ResponseEntity.ok(converter.entityToDto(service.alterar(pessoa)));
 	}
 	
 	@ApiOperation(value = "Excluir uma Pessoa")
 	@ApiResponses(value = {
 			    @ApiResponse(code = 200, message = "Exclusão com sucesso"),
 			    @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+			    @ApiResponse(code = 404, message = "Não existe Pessoa com esse ID"),
 			    @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
 			})
 	@DeleteMapping(value = "/{id}")
-	public void excluir(@PathVariable Long id) {
-		service.excluir(id);
+	public ResponseEntity<Object> excluir(@PathVariable Long id) {
+		Optional<Pessoa> pessoaOptional = service.buscarPorId(id);
+		if (!pessoaOptional.isPresent()) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(service.excluir(id));
 	}
 	
 }
