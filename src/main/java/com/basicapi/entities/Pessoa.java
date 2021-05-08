@@ -9,8 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Entity
-@Table(name = "Pessoa")
+@Table(name = "Pessoa", uniqueConstraints =  @UniqueConstraint(columnNames = "nome", name = "nome_uk"))
 public class Pessoa implements Serializable {
 
 	private static final long serialVersionUID = 1L;

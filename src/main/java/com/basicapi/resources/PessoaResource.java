@@ -3,9 +3,7 @@ package com.basicapi.resources;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.ParseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.basicapi.converter.PessoaConverter;
 import com.basicapi.dto.PessoaDto;
 import com.basicapi.entities.Pessoa;
 import com.basicapi.service.PessoaService;
@@ -32,7 +31,7 @@ public class PessoaResource {
 	private PessoaService service;
 	
 	@Autowired
-	private ModelMapper modelMapper;
+	private PessoaConverter converter;
 	 
 	@ApiOperation(value = "Retorna uma lista de todas pessoas")
 	@ApiResponses(value = {
@@ -43,10 +42,7 @@ public class PessoaResource {
 	@GetMapping(produces="application/json")
 	public ResponseEntity<List<PessoaDto>> buscarTodos() {
 		List<Pessoa> list = service.buscarTodos();
-		List<PessoaDto> listDto = list.stream()
-		          .map(this::convertToDto)
-		          .collect(Collectors.toList());
-		return ResponseEntity.ok(listDto);
+		return ResponseEntity.ok(converter.entityToDto(list));
 	}
 	
 	@ApiOperation(value = "Retorna uma lista de pessoas baseado no nome")
@@ -58,10 +54,7 @@ public class PessoaResource {
 	@GetMapping(value = "/{nome}", produces="application/json")
 	public ResponseEntity<List<PessoaDto>> buscarPorNome(@PathVariable String nome ) {
 		List<Pessoa> list = service.buscarPorNome(nome);
-		List<PessoaDto> listDto = list.stream()
-		          .map(this::convertToDto)
-		          .collect(Collectors.toList());
-		return ResponseEntity.ok(listDto);
+		return ResponseEntity.ok(converter.entityToDto(list));
 	}
 
 	@ApiOperation(value = "Incluir uma Pessoa")
@@ -72,8 +65,8 @@ public class PessoaResource {
 			})
 	@PostMapping(produces="application/json", consumes="application/json")
 	public PessoaDto incluir(@RequestBody PessoaDto pessoaDto) {
-		Pessoa pessoa = convertToEntity(pessoaDto);
-		return convertToDto(service.incluir(pessoa));
+		Pessoa pessoa = converter.dtoToEntity(pessoaDto);
+		return converter.entityToDto(service.incluir(pessoa));
 	}
 	
 	@ApiOperation(value = "Alterar uma Pessoa")
@@ -84,8 +77,8 @@ public class PessoaResource {
 			})
 	@PutMapping(produces="application/json", consumes="application/json")
 	public PessoaDto alterar(@RequestBody PessoaDto pessoaDto) {
-		Pessoa pessoa = convertToEntity(pessoaDto);
-		return convertToDto(service.alterar(pessoa));
+		Pessoa pessoa = converter.dtoToEntity(pessoaDto);
+		return converter.entityToDto(service.alterar(pessoa));
 	}
 	
 	@ApiOperation(value = "Excluir uma Pessoa")
@@ -99,11 +92,4 @@ public class PessoaResource {
 		service.excluir(id);
 	}
 	
-	private PessoaDto convertToDto(Pessoa pessoa) {
-		return modelMapper.map(pessoa, PessoaDto.class);
-	}
-	
-	private Pessoa convertToEntity(PessoaDto pessoaDto) throws ParseException {
-		return modelMapper.map(pessoaDto, Pessoa.class);
-	}
 }
