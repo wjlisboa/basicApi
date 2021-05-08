@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.basicapi.converter.PessoaConverter;
 import com.basicapi.dto.PessoaDto;
-import com.basicapi.dto.PessoaDtoInput;
 import com.basicapi.entities.Pessoa;
 import com.basicapi.service.PessoaService;
 
@@ -65,8 +64,8 @@ public class PessoaResource {
 			    @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
 			})
 	@PostMapping(produces="application/json", consumes="application/json")
-	public PessoaDto incluir(@RequestBody PessoaDtoInput pessoaDto) {
-		Pessoa pessoa = converter.dtoInputToEntity(pessoaDto);
+	public PessoaDto incluir(@RequestBody PessoaDto pessoaDto) {
+		Pessoa pessoa = converter.dtoToEntity(pessoaDto);
 		return converter.entityToDto(service.incluir(pessoa));
 	}
 	
@@ -78,12 +77,12 @@ public class PessoaResource {
 			    @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
 			})
 	@PutMapping(produces="application/json", consumes="application/json")
-	public ResponseEntity<Object> alterar(@RequestBody PessoaDtoInput pessoaDto) {
+	public ResponseEntity<Object> alterar(@RequestBody PessoaDto pessoaDto) {
 		Optional<Pessoa> pessoaOptional = service.buscarPorId(pessoaDto.getId());
 		if (!pessoaOptional.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		Pessoa pessoa = converter.dtoInputToEntity(pessoaDto);
+		Pessoa pessoa = converter.dtoToEntity(pessoaDto);
 		return ResponseEntity.ok(converter.entityToDto(service.alterar(pessoa)));
 	}
 	

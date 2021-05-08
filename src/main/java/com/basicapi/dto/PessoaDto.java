@@ -18,6 +18,9 @@ public class PessoaDto {
 	@ApiModelProperty(value = "Nome da pessoa")
 	private String nome;
 	
+	@ApiModelProperty(value = "CEP da pessoa pra pesquisa de Endereço (INCLUIR)")
+	private Long cep;
+	
 	@ApiModelProperty(value = "Endereço da pessoa")
 	private EnderecoDto endereco;
 }

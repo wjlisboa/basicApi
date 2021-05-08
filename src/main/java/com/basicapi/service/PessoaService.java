@@ -21,23 +21,23 @@ public class PessoaService {
 	}
 	
 
-	public List<Pessoa> buscarPorNome(String nome ) {
+	public List<Pessoa> buscarPorNome(String nome) {
 		return repository.findByNomeContainingIgnoreCase(nome);
 	}
 
-	public Optional<Pessoa> buscarPorId(Long id ) {
+	public Optional<Pessoa> buscarPorId(Long id) {
 		return repository.findById(id);
 	}
 
-	public Pessoa incluir (Pessoa pessoa) {
+	public Pessoa incluir(Pessoa pessoa) {
 		return repository.save(pessoa);
 	}
 	
-	public Pessoa alterar (@RequestBody Pessoa pessoa) {
+	public Pessoa alterar(@RequestBody Pessoa pessoa) {
 		return repository.save(pessoa);
 	}
 	
-	public String excluir (Long id) {
+	public String excluir(Long id) {
 		 repository.deleteById(id);
 		 return "Pessoa excluída com sucesso";
 	}
