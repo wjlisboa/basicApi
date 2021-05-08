@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.basicapi.dto.PessoaDto;
 import com.basicapi.entities.Pessoa;
+import com.basicapi.feignclients.EnderecoFeignClient;
 
 @Component
 public class PessoaConverter {
@@ -17,9 +18,20 @@ public class PessoaConverter {
 	@Autowired
 	private ModelMapper modelMapper;
 	
+	@Autowired
+	private EnderecoFeignClient enderecoFeign;
 	
 	public PessoaDto entityToDto(Pessoa pessoa) {
-		return modelMapper.map(pessoa, PessoaDto.class);
+		PessoaDto pessoaDto = modelMapper.map(pessoa, PessoaDto.class);
+		if (pessoaDto.getCep() != null) {
+			try {
+				pessoaDto.setEndereco(enderecoFeign.getEndereco(pessoaDto.getCep()).get());
+			} catch (Exception e) {
+				//Não encontrou CEP ou retornou erro no serviço
+				pessoaDto.setEndereco(null);
+			}
+		}
+		return pessoaDto;
 	}
 	
 	public Pessoa dtoToEntity(PessoaDto pessoaDto) throws ParseException {

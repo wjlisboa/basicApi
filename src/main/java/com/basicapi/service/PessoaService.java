@@ -19,7 +19,6 @@ public class PessoaService {
 	public List<Pessoa> buscarTodos() {
 		return repository.findAll();
 	}
-	
 
 	public List<Pessoa> buscarPorNome(String nome) {
 		return repository.findByNomeContainingIgnoreCase(nome);

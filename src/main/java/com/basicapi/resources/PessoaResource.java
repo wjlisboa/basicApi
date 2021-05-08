@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.basicapi.converter.PessoaConverter;
-import com.basicapi.dto.EnderecoDto;
 import com.basicapi.dto.PessoaDto;
 import com.basicapi.entities.Pessoa;
 import com.basicapi.feignclients.EnderecoFeignClient;
@@ -71,20 +70,15 @@ public class PessoaResource {
 			})
 	@PostMapping(produces="application/json", consumes="application/json")
 	public ResponseEntity<Object> incluir(@RequestBody PessoaDto pessoaDto) {
-		EnderecoDto endereco = null;
-		if (pessoaDto.getCep()!=null) {
+		if (pessoaDto.getCep() != null) {
 			try {
-				endereco = enderecoFeign.getEndereco(pessoaDto.getCep()).get();
+				enderecoFeign.getEndereco(pessoaDto.getCep()).get();
 			} catch (Exception e) {
 				return ResponseEntity.badRequest().build();
 			}
 		}
 		Pessoa pessoa = converter.dtoToEntity(pessoaDto);
-		pessoaDto = converter.entityToDto(service.incluir(pessoa));
-		if (endereco != null) {
-			pessoaDto.setEndereco(endereco);
-		}
-		return ResponseEntity.ok(pessoaDto);
+		return ResponseEntity.ok(converter.entityToDto(service.incluir(pessoa)));
 	}
 	
 	@ApiOperation(value = "Alterar uma Pessoa")
@@ -101,21 +95,17 @@ public class PessoaResource {
 		if (!pessoaOptional.isPresent()) {
 			return ResponseEntity.notFound().build();
 		}
-		EnderecoDto endereco = null;
-		if (pessoaDto.getCep()!=null) {
+		if (pessoaDto.getCep() != null) {
 			try {
-				endereco = enderecoFeign.getEndereco(pessoaDto.getCep()).get();
+				enderecoFeign.getEndereco(pessoaDto.getCep()).get();
 			} catch (Exception e) {
 				return ResponseEntity.badRequest().build();
 			}
 		}
 		Pessoa pessoa = converter.dtoToEntity(pessoaDto);
-		service.alterar(pessoa);
-		if (endereco != null) {
-			pessoaDto.setEndereco(endereco);
-		}
-		return ResponseEntity.ok(pessoaDto);
+		return ResponseEntity.ok(converter.entityToDto(service.alterar(pessoa)));
 	}
+
 	
 	@ApiOperation(value = "Excluir uma Pessoa")
 	@ApiResponses(value = {
