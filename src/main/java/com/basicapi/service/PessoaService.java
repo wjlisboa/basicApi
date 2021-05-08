@@ -20,8 +20,8 @@ public class PessoaService {
 	}
 	
 
-	public Pessoa buscarPorNome(String nome ) {
-		return repository.findByNomeIgnoreCase(nome);
+	public List<Pessoa> buscarPorNome(String nome ) {
+		return repository.findByNomeContainingIgnoreCase(nome);
 	}
 
 	public Pessoa buscarPorId(Long id ) {
