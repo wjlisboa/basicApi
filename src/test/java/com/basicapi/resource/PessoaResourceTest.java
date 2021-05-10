@@ -1,4 +1,4 @@
-package com.basicapi.recource;
+package com.basicapi.resource;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.Mockito.times;
