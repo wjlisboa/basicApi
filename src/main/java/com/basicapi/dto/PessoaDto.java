@@ -1,7 +1,10 @@
 package com.basicapi.dto;
 
+import java.io.Serializable;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -10,8 +13,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class PessoaDto {
+@Builder
+public class PessoaDto implements Serializable{
 
+	private static final long serialVersionUID = 1L;
+	
 	@ApiModelProperty(value = "Código da pessoa")
 	private Long id;
 	

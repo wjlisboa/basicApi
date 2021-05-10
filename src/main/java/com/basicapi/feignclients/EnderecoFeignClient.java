@@ -15,4 +15,5 @@ public interface EnderecoFeignClient {
 
 	@GetMapping(value = "/ws/{cep}/json")
 	Optional<EnderecoDto> getEndereco(@PathVariable Long cep);
+	
 }

@@ -53,11 +53,15 @@ public class PessoaResource {
 	@ApiResponses(value = {
 			    @ApiResponse(code = 200, message = "Retorna a lista de pessoas"),
 			    @ApiResponse(code = 403, message = "Você não tem permissão para acessar este recurso"),
+			    @ApiResponse(code = 404, message = "Nenhuma Pessoa com este nome"),
 			    @ApiResponse(code = 500, message = "Foi gerada uma exceção"),
 			})
 	@GetMapping(value = "/{nome}", produces="application/json")
 	public ResponseEntity<List<PessoaDto>> buscarPorNome(@PathVariable String nome ) {
 		List<Pessoa> list = service.buscarPorNome(nome);
+		if (list.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
 		return ResponseEntity.ok(converter.entityToDto(list));
 	}
 
