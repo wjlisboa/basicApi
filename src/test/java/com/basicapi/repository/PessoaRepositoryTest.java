@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ class PessoaRepositoryTest {
 	private PessoaRepository repository;
 	 
     @Test
+    @DisplayName("Deve incluir uma pessoa e validar se a inclusão foi correta")
     void inserirPessoa() {
     	Integer countBefore = repository.findAll().size();
         Pessoa pessoa = Pessoa.builder().nome("Welington 2").build();
@@ -37,6 +39,7 @@ class PessoaRepositoryTest {
     
     
     @Test
+    @DisplayName("Deve alterar uma pessoa e validar se a alteração foi correta")
     void alterarPessoa() {
     	Optional<Pessoa> pessoaOptionalBefore = repository.findById(1l);
 
@@ -55,6 +58,7 @@ class PessoaRepositoryTest {
     }
    
     @Test
+    @DisplayName("Deve consultar uma pessoa passando o nome e validar o retorno")
     void buscarPorNome() {
         Pessoa pessoa = Pessoa.builder().nome("Wel").build();
         List<Pessoa> pessoas = repository.findByNomeContainingIgnoreCase(pessoa.getNome());

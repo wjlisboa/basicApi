@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,8 @@ class PessoaResourceTest {
     private ObjectMapper objectMapper;
    
     @Test
-    void deveRetornarSucesso_QuandoBuscarTodos() throws Exception {
+    @DisplayName("Deve retonar lista de todas pessoas")
+    void deve_RetornarSucesso_QuandoBuscarTodos() throws Exception {
     	Pessoa pessoa = Pessoa.builder().nome("Welington").build();
         List<Pessoa> pessoaList = List.of(pessoa);
         
@@ -69,13 +71,15 @@ class PessoaResourceTest {
     }
     
     @Test
-    void deveRetornar_404_QuandoPesquisarPessoa() throws Exception {
+    @DisplayName("Deve retonar 404 quando pesquisar por uma pessoa que não existe")
+    void deve_Retornar_404_QuandoPesquisarPessoa() throws Exception {
         mockMvc.perform(get("/api/pessoa/2")).andExpect(status().isNotFound());
         verify(service, times(1)).buscarPorNome("2");
     }
     
     @Test
-    void deveRetornarSucesso_QuandoInserirPessoa() throws Exception {
+    @DisplayName("Deve incluir uma pessoa e validar se a inclusão foi correta")
+    void deve_RetornarSucesso_QuandoInserirPessoa() throws Exception {
 		
     	Pessoa pessoa = Pessoa.builder().nome("Welington").build();
         
@@ -98,7 +102,8 @@ class PessoaResourceTest {
     }
     
     @Test
-    void deveRetornarSucesso_QuandoAtualizarPessoa() throws Exception {
+    @DisplayName("Deve alterar uma pessoa e validar se a alteração foi correta")
+    void deve_RetornarSucesso_QuandoAtualizarPessoa() throws Exception {
 		
     	Pessoa pessoa = Pessoa.builder().nome("Welington").build();
         
@@ -123,7 +128,8 @@ class PessoaResourceTest {
     }
     
     @Test
-    void deveRetornarSucesso_QuandoExcluirPessoa() throws Exception {
+    @DisplayName("Deve Excluir uma pessoa e validar se a exclusão foi com Sucesso")
+    void deve_RetornarSucesso_QuandoExcluirPessoa() throws Exception {
 		
     	Pessoa pessoa = Pessoa.builder().id(1l).nome("Welington").build();
         
